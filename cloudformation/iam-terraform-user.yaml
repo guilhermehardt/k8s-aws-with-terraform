@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Terraform administrator user"
+Parameters:
+  UserName:
+    Description: "The user name"
+    Type: String
+    Default: "terraform-user"
+Resources:
+  user:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: !Sub "${UserName}-${AWS::Region}"
+  accessKey:
+    Type: "AWS::IAM::AccessKey"
+    Properties:
+      UserName: !Ref user
+  userGroup:
+    Type: "AWS::IAM::UserToGroupAddition"
+    Properties:
+      GroupName: !Sub "${UserName}-${AWS::Region}"
+      Users: [!Ref "user"]
+  group:
+    Type: "AWS::IAM::Group"
+    Properties:
+      GroupName: !Sub "${UserName}-${AWS::Region}"
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonRoute53FullAccess"
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        - "arn:aws:iam::aws:policy/IAMFullAccess"
+        - "arn:aws:iam::aws:policy/AmazonVPCFullAccess"
+        - "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess"
+      
+Outputs:
+  accessKey:
+    Description: "AWS_ACCESS_KEY_ID"
+    Value: !Ref accessKey
+  secretKey:
+    Description: "AWS_SECRET_ACCESS_KEY"
+    Value: !GetAtt [accessKey, SecretAccessKey]
