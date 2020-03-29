@@ -1,9 +1,11 @@
-## Kubernetes cluster on AWS
+# Kubernetes cluster on AWS
 
-### Description
-This is a simple project to installing a Kubernetes cluster on AWS Cloud using [Terraform](https://www.terraform.io/). The AWS services and resources used here are included on AWS Free Tier program.
+## Description
+This is a simple project that can help you install and configure a Kubernetes cluster on AWS Cloud using Cloudformation and [Terraform](https://www.terraform.io/).
 
-### Creating resources on AWS
+## Creating resources on AWS
+
+### Cloudformation
 
 Log in to the AWS Management Console, select Cloudformation in the Services Menu and create a new stack. On Specify template page, choose the file [iam-terraform-user](cloudformation/iam-terraform-user.yaml). After create the stack, go to Outputs tab and copy the values: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 ```bash
@@ -21,19 +23,21 @@ Exporting the Terraform's variables with SSH public key
 export TF_VAR_ssh_public_key=$(cat k8s-aws-tf-key.pub)
 export TF_VAR_ssh_key_name=kp-k8s-aws-tf
 ```
-Initializing the terraform on your local machine
+
+### Terraform
+
+Check the [Terraform variables file](variables.tf) and change the values. Now we need initialize the Terraform on your local machine
 ```bash
 terraform init
 ```
 Creating the resources needed on AWS with Terraform
 ```bash
-# check all resources that will be created
+# Check all resources that will be created
 terraform plan
 
-# create the resources
+# If it's ok, create the resources
 terraform apply -auto-approve
 ```
-Wait for terraform finish
 
 ### Connect to your instances
 
@@ -46,9 +50,9 @@ Connect on your instances
 $ ssh -A ubuntu@<Copy the instances public ips from Terraform output>
 ``` 
 
-### Creating the Kubernetes cluster
+## Creating the Kubernetes cluster
 
-#### Installing components
+### Installing components
 
 Run the bellow commands in **ALL master and worker nodes**
 
@@ -81,7 +85,7 @@ $ systemctl daemon-reload
 $ systemctl restart docker
 ```
 
-#### Starting the cluster
+### Starting the cluster
 
 Run the bellow commands in **master nodes ONLY**. First we need make download of [kubernetes components](https://kubernetes.io/docs/concepts/overview/components/) (for example: kube-apiserver, kube-scheduler, etcd, coredns, etc)
 ```bash
@@ -105,7 +109,7 @@ Installing [pod network](https://kubernetes.io/docs/concepts/cluster-administrat
 $ kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 ```
 
-#### Adding new nodes
+### Adding new nodes
 
 On **Master node** run the bellow command to print the full 'kubeadm join' flag needed to join the cluster
 ```bash
@@ -116,7 +120,7 @@ Copy the output ('kubeadm join ...' command) e run it into yours **Worker nodes*
 $ kubectl get nodes
 ```
 
-#### Deploying my first pod
+## Deploying my first pod
 
 ```bash
 kubectl run --image=nginx --port 80
@@ -125,8 +129,7 @@ kubectl expose deployment nginx
 kubectl expose deployment nginx --type=NodePort
 ```
 
-
-#### tips
+## tips
 
 - To know more see the [Kubernetes official docs](https://kubernetes.io/docs)
 - Check the [Configuration best practices](https://kubernetes.io/docs/concepts/configuration/overview/)
