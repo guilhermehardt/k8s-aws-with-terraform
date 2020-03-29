@@ -91,7 +91,7 @@ resource "aws_network_acl_rule" "in-pb-200" {
   protocol       = 6
   egress         = false
   rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
+  cidr_block     = var.public-cidr-block-in
   from_port      = 80
   to_port        = 80
 }
@@ -101,7 +101,7 @@ resource "aws_network_acl_rule" "in-pb-210" {
   protocol       = 6
   egress         = false
   rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
+  cidr_block     = var.public-cidr-block-in
   from_port      = 443
   to_port        = 443
 }
@@ -121,7 +121,7 @@ resource "aws_network_acl_rule" "in-pb-900" {
   protocol       = 6
   egress         = false
   rule_action    = "allow"
-  cidr_block     = "0.0.0.0/0"
+  cidr_block     = var.public-cidr-block-in
   from_port      = 1024
   to_port        = 65535
 }
